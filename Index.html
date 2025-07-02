@@ -1,235 +1,147 @@
 <!DOCTYPE html>
-<html lang="zh-HK">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>羅富記粥麵專家 | 香港傳統美食</title>
+    <title>Food Info Generator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --tofu-brown: #8d6e63;
-            --tofu-beige: #efebe9;
-            --tofu-red: #c62828;
-        }
         body {
-            font-family: 'Microsoft JhengHei', 'PingFang TC', sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: var(--tofu-beige);
-            color: #5d4037;
-            line-height: 1.7;
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8; /* Light blue-gray background */
         }
-        .header {
-            background: linear-gradient(135deg, var(--tofu-brown), #6d4c41);
-            color: white;
-            padding: 3rem 0;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
+        /* Custom scrollbar for result display */
+        .scrollable-content::-webkit-scrollbar {
+            width: 8px;
         }
-        .header::before {
-            content: "🍜";
-            position: absolute;
-            font-size: 120px;
-            opacity: 0.1;
-            right: 30px;
-            top: 10px;
-        }
-        .container {
-            max-width: 1100px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        h1 {
-            margin: 0;
-            font-size: 3rem;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-            position: relative;
-        }
-        h1 small {
-            display: block;
-            font-size: 1.2rem;
-            margin-top: 10px;
-            opacity: 0.9;
-        }
-        .restaurant-info {
-            background: white;
-            padding: 30px;
-            border-radius: 12px;
-            margin: 30px 0;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-            border-left: 6px solid var(--tofu-red);
-        }
-        .map-container {
-            position: relative;
-            padding-bottom: 56.25%;
-            height: 0;
-            overflow: hidden;
-            margin: 35px 0;
-            border-radius: 15px;
-            box-shadow: 0 6px 18px rgba(0,0,0,0.12);
-            border: 3px solid var(--tofu-brown);
-        }
-        .map-container iframe {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            border: none;
-        }
-        .menu-section {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
-            margin: 40px 0;
-        }
-        .menu-item {
-            background: white;
+        .scrollable-content::-webkit-scrollbar-track {
+            background: #e2e8f0; /* Lighter track */
             border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            transition: all 0.3s ease;
         }
-        .menu-item:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-        }
-        .menu-item img {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-            border-bottom: 4px solid var(--tofu-brown);
-        }
-        .menu-content {
-            padding: 20px;
-        }
-        .menu-content h3 {
-            color: var(--tofu-red);
-            margin: 0 0 10px 0;
-            font-size: 1.4rem;
-            border-bottom: 2px dashed var(--tofu-brown);
-            padding-bottom: 8px;
-        }
-        .price {
-            color: var(--tofu-brown);
-            font-weight: bold;
-            font-size: 1.3rem;
-            display: inline-block;
-            margin-top: 10px;
-        }
-        .location-info {
-            background: #f5efea;
-            padding: 25px;
+        .scrollable-content::-webkit-scrollbar-thumb {
+            background: #94a3b8; /* Darker thumb */
             border-radius: 10px;
-            margin: 30px 0;
-            border-top: 4px solid var(--tofu-red);
         }
-        .opening-hours {
-            display: inline-block;
-            background: var(--tofu-red);
-            color: white;
-            padding: 10px 20px;
-            border-radius: 25px;
-            margin-top: 15px;
-            font-size: 1rem;
-        }
-        footer {
-            text-align: center;
-            padding: 30px;
-            background: linear-gradient(to right, var(--tofu-brown), #5d4037);
-            color: white;
-            margin-top: 60px;
-        }
-        .signature {
-            font-style: italic;
-            color: var(--tofu-brown);
-            text-align: right;
-            margin-top: 20px;
-        }
-        .tag {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            background-color: var(--tofu-red);
-            color: white;
-            padding: 5px 10px;
-            border-radius: 15px;
-            font-size: 0.8rem;
-            font-weight: bold;
-        }
-        @media (max-width: 768px) {
-            h1 { font-size: 2.2rem; }
-            .container { padding: 15px; }
-            .menu-section { grid-template-columns: 1fr; }
-            .header { padding: 2rem 0; }
+        .scrollable-content::-webkit-scrollbar-thumb:hover {
+            background: #64748b; /* Even darker on hover */
         }
     </style>
 </head>
-<body>
-    <header class="header">
-        <div class="container">
-            <h1>羅富記粥麵專家<small>傳統港式風味 • 五十載傳承</small></h1>
-        </div>
-    </header>
+<body class="flex items-center justify-center min-h-screen p-4 text-lg"> <div class="bg-white p-8 rounded-lg shadow-xl w-full max-w-md border border-gray-200">
+        <h1 class="text-3xl font-bold text-center text-gray-800 mb-6">Food Information App</h1>
 
-    <div class="container">
-        <div class="shop-info">
-            <h2>關於羅富記粥麵專家</h2>
-            <p>羅富記粥麵專家創立於1970年代，從一家街邊小店成長為香港深受歡迎的粥麵名店。我們堅持每日熬製濃香粥底，選用新鮮食材，為顧客呈現正宗港式滋味。</p>
-            <p>「羅富記」由羅氏家族創辦，現由第二代傳人經營，秉承傳統配方與手藝，致力為您帶來一碗碗暖心又美味的粥麵。</p>
-            <p class="signature">—— 真材實料 用心熬製 ——</p>
+        <div class="mb-6">
+            <label for="foodNameInput" class="block text-gray-700 text-lg font-semibold mb-2">Enter Food Name:</label> <input
+                type="text"
+                id="foodNameInput"
+                placeholder="e.g., Apple, Chicken Breast, Oatmeal"
+                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 text-lg" >
         </div>
 
-        <div class="map-container">
-            <iframe 
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3691.8621232215676!2d114.1582233154433!3d22.31632018532345!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x340400c7a3f6f4a7%3A0x1f9e9a93f010935f!2z6I-v6ZaA5Y2X6ZaA5Y2X!5e0!3m2!1szh-TW!2shk!4v1629876543210!5m2!1szh-TW!2shk" 
-                allowfullscreen 
-                loading="lazy" 
-                referrerpolicy="no-referrer-when-downgrade">
-            </iframe>
-        </div>
+        <button
+            id="searchButton"
+            class="w-full bg-blue-600 text-white py-3 rounded-md font-semibold hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-200 ease-in-out shadow-md hover:shadow-lg text-lg" >
+            Get Info
+        </button>
 
-        <div class="location-info">
-            <h2>店鋪資訊</h2>
-            <p>地址：香港中環皇后大道中144號地下</p>
-            <p>電話：+852 2541 6380</p>
-            <p>營業時間：<span class="opening-hours">07:00 - 22:00 (售完即止)</span></p>
-        </div>
-
-        <h2 style="text-align: center; color: var(--tofu-brown); margin-top: 50px;">招牌美食</h2>
-        <div class="menu-section">
-            <div class="menu-item">
-                <div class="tag">必食之選</div>
-                <img src="https://example.com/congee.jpg" alt="皮蛋瘦肉粥">
-                <div class="menu-content">
-                    <h3>皮蛋瘦肉粥</h3>
-                    <p>香濃粥底配皮蛋及嫩滑瘦肉，經典港式風味</p>
-                    <p class="price">HKD 28</p>
-                </div>
+        <div id="loadingIndicator" class="mt-6 text-center text-blue-600 font-medium hidden">
+            <div class="flex items-center justify-center space-x-2">
+                <svg class="animate-spin h-5 w-5 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                <span>Loading...</span>
             </div>
-            <div class="menu-item">
-                <div class="tag">人氣推薦</div>
-                <img src="https://example.com/beef-noodle.jpg" alt="牛腩撈麵">
-                <div class="menu-content">
-                    <h3>牛腩撈麵</h3>
-                    <p>慢燉牛腩配彈牙麵條，濃郁湯汁令人回味</p>
-                    <p class="price">HKD 38</p>
-                </div>
-            </div>
-            <div class="menu-item">
-                <img src="https://example.com/wonton-noodle.jpg" alt="鮮蝦雲吞麵">
-                <div class="menu-content">
-                    <h3>鮮蝦雲吞麵</h3>
-                    <p>手包鮮蝦雲吞搭配彈牙細麵，湯清味鮮</p>
-                    <p class="price">HKD 35</p>
-                </div>
-            </div>
+        </div>
+
+        <div id="resultsDisplay" class="mt-6 p-4 bg-gray-50 border border-gray-200 rounded-md shadow-inner min-h-[150px] max-h-[400px] overflow-y-auto scrollable-content text-gray-800 text-xl leading-relaxed whitespace-pre-wrap"> <p class="text-gray-500 italic">Enter a food name above and click "Get Info" to see details.</p>
         </div>
     </div>
 
-    <footer>
-        <p>© 2025 羅富記粥麵專家 版權所有</p>
-        <p>傳統手藝 • 五十載傳承 • 香港味道</p>
-    </footer>
+    <script type="module">
+        // Get references to HTML elements
+        const foodNameInput = document.getElementById('foodNameInput');
+        const searchButton = document.getElementById('searchButton');
+        const loadingIndicator = document.getElementById('loadingIndicator');
+        const resultsDisplay = document.getElementById('resultsDisplay');
+
+        // Function to handle the search button click
+        async function handleSearch() {
+            const foodName = foodNameInput.value.trim();
+
+            if (!foodName) {
+                resultsDisplay.innerHTML = '<p class="text-red-500 font-medium">Please enter a food name.</p>';
+                return;
+            }
+
+            // Show loading indicator and clear previous results
+            loadingIndicator.classList.remove('hidden');
+            resultsDisplay.innerHTML = ''; // Clear content
+            searchButton.disabled = true; // Disable button during loading
+
+            try {
+                // Construct the prompt for the LLM
+                const prompt = `Provide short and precise information about the ingredients, if it is good for people with high blood pressure or diabetes or high cholesterol or heart disease or kidney disease, and key nutritional facts (calories, protein, carbs, fat, vitamins, minerals) for "${foodName}". Please format the output clearly with headings for "Ingredients" and "Nutritional Facts".`;
+
+                // OpenRouter API configuration
+                
+                const encodedkey = "c2stb3ItdjEtYWU2ZmYwMzIxZDkyYWI0NjU4ZjdjNDI5MTJmMmI0ZTRmZjNkMTc0NzBiY2JjMGI5M2I5MzQ5MGIwZWNiM2ZiZg=="; //
+                const apiKey = atob(encodedkey);
+                const apiUrl = `https://openrouter.ai/api/v1/chat/completions`; // OpenRouter endpoint
+                const model = "google/gemma-3-27b-it:free"; // You can choose other models available on OpenRouter
+
+                const payload = {
+                    model: model,
+                    messages: [
+                        { role: "user", content: prompt }
+                    ]
+                };
+
+                // Make the fetch call to the OpenRouter API
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${apiKey}`, // OpenRouter uses Bearer token in Authorization header
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(`API error: ${response.status} - ${errorData.error.message || response.statusText}`);
+                }
+
+                const result = await response.json();
+
+                // Check if the response has content from OpenRouter
+                if (result.choices && result.choices.length > 0 && result.choices[0].message && result.choices[0].message.content) {
+                    const generatedText = result.choices[0].message.content;
+                    resultsDisplay.innerText = generatedText; // Display the generated text
+                } else {
+                    resultsDisplay.innerHTML = '<p class="text-red-500 font-medium">No information found or unexpected response format from OpenRouter. Please try again.</p>';
+                }
+
+            } catch (error) {
+                console.error("Error fetching food information from OpenRouter:", error);
+                resultsDisplay.innerHTML = `<p class="text-red-500 font-medium">An error occurred: ${error.message}. Please check your API key or try again.</p>`;
+            } finally {
+                // Hide loading indicator and re-enable button
+                loadingIndicator.classList.add('hidden');
+                searchButton.disabled = false;
+            }
+        }
+
+        // Add event listener to the search button
+        searchButton.addEventListener('click', handleSearch);
+
+        // Allow pressing Enter key to trigger search
+        foodNameInput.addEventListener('keypress', (event) => {
+            if (event.key === 'Enter') {
+                handleSearch();
+            }
+        });
+    </script>
 </body>
-</html>
+    </html>
