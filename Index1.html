@@ -29,29 +29,34 @@
     </style>
 </head>
 <body class="flex items-center justify-center min-h-screen p-4 text-lg"> <div class="bg-white p-8 rounded-lg shadow-xl w-full max-w-md border border-gray-200">
-        <h1 class="text-3xl font-bold text-center text-gray-800 mb-6">食物信息查询</h1> <div class="mb-6">
-            <label for="foodNameInput" class="block text-gray-700 text-sm font-semibold mb-2">输入食物名称:</label> <input
+        <h1 class="text-3xl font-bold text-center text-gray-800 mb-6">Food Information App</h1>
+
+        <div class="mb-6">
+            <label for="foodNameInput" class="block text-gray-700 text-lg font-semibold mb-2">Enter Food Name:</label> <input
                 type="text"
                 id="foodNameInput"
-                placeholder="例如：苹果, 鸡胸肉, 燕麦片" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200"
-            >
+                placeholder="e.g., Apple, Chicken Breast, Oatmeal"
+                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 text-lg" >
         </div>
 
         <button
             id="searchButton"
-            class="w-full bg-blue-600 text-white py-3 rounded-md font-semibold hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-200 ease-in-out shadow-md hover:shadow-lg"
-        >
-            获取信息
-        </button> <div id="loadingIndicator" class="mt-6 text-center text-blue-600 font-medium hidden">
+            class="w-full bg-blue-600 text-white py-3 rounded-md font-semibold hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-200 ease-in-out shadow-md hover:shadow-lg text-lg" >
+            Get Info
+        </button>
+
+        <div id="loadingIndicator" class="mt-6 text-center text-blue-600 font-medium hidden">
             <div class="flex items-center justify-center space-x-2">
                 <svg class="animate-spin h-5 w-5 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                     <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
-                <span>加载中...</span> </div>
+                <span>Loading...</span>
+            </div>
         </div>
 
-        <div id="resultsDisplay" class="mt-6 p-4 bg-gray-50 border border-gray-200 rounded-md shadow-inner min-h-[150px] max-h-[400px] overflow-y-auto scrollable-content text-gray-800 text-xl leading-relaxed whitespace-pre-wrap"> <p class="text-gray-500 italic">在上方输入食物名称，然后点击“获取信息”查看详细信息。</p> </div>
+        <div id="resultsDisplay" class="mt-6 p-4 bg-gray-50 border border-gray-200 rounded-md shadow-inner min-h-[150px] max-h-[400px] overflow-y-auto scrollable-content text-gray-800 text-xl leading-relaxed whitespace-pre-wrap"> <p class="text-gray-500 italic">Enter a food name above and click "Get Info" to see details.</p>
+        </div>
     </div>
 
     <script type="module">
@@ -66,7 +71,7 @@
             const foodName = foodNameInput.value.trim();
 
             if (!foodName) {
-                resultsDisplay.innerHTML = '<p class="text-red-500 font-medium">请输入食物名称。</p>'; // Changed error message to Chinese
+                resultsDisplay.innerHTML = '<p class="text-red-500 font-medium">Please enter a food name.</p>';
                 return;
             }
 
@@ -77,5 +82,66 @@
 
             try {
                 // Construct the prompt for the LLM
-                // Changed prompt to request Chinese output
-                const prompt = `提供关于 "${foodName}" 
+                const prompt = `Provide short and precise information about the ingredients, if it is good for people with high blood pressure or diabetes or high cholesterol or heart disease or kidney disease, and key nutritional facts (calories, protein, carbs, fat, vitamins, minerals) for "${foodName}". Please format the output clearly with headings for "Ingredients" and "Nutritional Facts".`;
+
+                // OpenRouter API configuration
+                
+                const encodedkey = "c2stb3ItdjEtYWU2ZmYwMzIxZDkyYWI0NjU4ZjdjNDI5MTJmMmI0ZTRmZjNkMTc0NzBiY2JjMGI5M2I5MzQ5MGIwZWNiM2ZiZg=="; //
+                const apiKey = atob(encodedkey);
+                const apiUrl = `https://openrouter.ai/api/v1/chat/completions`; // OpenRouter endpoint
+                const model = "google/gemma-3-27b-it:free"; // You can choose other models available on OpenRouter
+
+                const payload = {
+                    model: model,
+                    messages: [
+                        { role: "user", content: prompt }
+                    ]
+                };
+
+                // Make the fetch call to the OpenRouter API
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${apiKey}`, // OpenRouter uses Bearer token in Authorization header
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(`API error: ${response.status} - ${errorData.error.message || response.statusText}`);
+                }
+
+                const result = await response.json();
+
+                // Check if the response has content from OpenRouter
+                if (result.choices && result.choices.length > 0 && result.choices[0].message && result.choices[0].message.content) {
+                    const generatedText = result.choices[0].message.content;
+                    resultsDisplay.innerText = generatedText; // Display the generated text
+                } else {
+                    resultsDisplay.innerHTML = '<p class="text-red-500 font-medium">No information found or unexpected response format from OpenRouter. Please try again.</p>';
+                }
+
+            } catch (error) {
+                console.error("Error fetching food information from OpenRouter:", error);
+                resultsDisplay.innerHTML = `<p class="text-red-500 font-medium">An error occurred: ${error.message}. Please check your API key or try again.</p>`;
+            } finally {
+                // Hide loading indicator and re-enable button
+                loadingIndicator.classList.add('hidden');
+                searchButton.disabled = false;
+            }
+        }
+
+        // Add event listener to the search button
+        searchButton.addEventListener('click', handleSearch);
+
+        // Allow pressing Enter key to trigger search
+        foodNameInput.addEventListener('keypress', (event) => {
+            if (event.key === 'Enter') {
+                handleSearch();
+            }
+        });
+    </script>
+</body>
+</html>
