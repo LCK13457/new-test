@@ -4,9 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Food Info Generator</title>
-    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Inter font from Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body {
@@ -30,44 +28,30 @@
         }
     </style>
 </head>
-<body class="flex items-center justify-center min-h-screen p-4">
-    <div class="bg-white p-8 rounded-lg shadow-xl w-full max-w-md border border-gray-200">
-        <h1 class="text-3xl font-bold text-center text-gray-800 mb-6">Food Information App</h1>
-
-        <!-- Input Section -->
-        <div class="mb-6">
-            <label for="foodNameInput" class="block text-gray-700 text-sm font-semibold mb-2">Enter Food Name:</label>
-            <input
+<body class="flex items-center justify-center min-h-screen p-4 text-lg"> <div class="bg-white p-8 rounded-lg shadow-xl w-full max-w-md border border-gray-200">
+        <h1 class="text-3xl font-bold text-center text-gray-800 mb-6">食物信息查询</h1> <div class="mb-6">
+            <label for="foodNameInput" class="block text-gray-700 text-sm font-semibold mb-2">输入食物名称:</label> <input
                 type="text"
                 id="foodNameInput"
-                placeholder="e.g., Apple, Chicken Breast, Oatmeal"
-                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200"
+                placeholder="例如：苹果, 鸡胸肉, 燕麦片" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200"
             >
         </div>
 
-        <!-- Button Section -->
         <button
             id="searchButton"
             class="w-full bg-blue-600 text-white py-3 rounded-md font-semibold hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-200 ease-in-out shadow-md hover:shadow-lg"
         >
-            Get Info
-        </button>
-
-        <!-- Loading Indicator -->
-        <div id="loadingIndicator" class="mt-6 text-center text-blue-600 font-medium hidden">
+            获取信息
+        </button> <div id="loadingIndicator" class="mt-6 text-center text-blue-600 font-medium hidden">
             <div class="flex items-center justify-center space-x-2">
                 <svg class="animate-spin h-5 w-5 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                     <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
-                <span>Loading...</span>
-            </div>
+                <span>加载中...</span> </div>
         </div>
 
-        <!-- Results Display Area -->
-        <div id="resultsDisplay" class="mt-6 p-4 bg-gray-50 border border-gray-200 rounded-md shadow-inner min-h-[150px] max-h-[400px] overflow-y-auto scrollable-content text-gray-800 text-sm leading-relaxed whitespace-pre-wrap">
-            <p class="text-gray-500 italic">Enter a food name above and click "Get Info" to see details.</p>
-        </div>
+        <div id="resultsDisplay" class="mt-6 p-4 bg-gray-50 border border-gray-200 rounded-md shadow-inner min-h-[150px] max-h-[400px] overflow-y-auto scrollable-content text-gray-800 text-xl leading-relaxed whitespace-pre-wrap"> <p class="text-gray-500 italic">在上方输入食物名称，然后点击“获取信息”查看详细信息。</p> </div>
     </div>
 
     <script type="module">
@@ -82,7 +66,7 @@
             const foodName = foodNameInput.value.trim();
 
             if (!foodName) {
-                resultsDisplay.innerHTML = '<p class="text-red-500 font-medium">Please enter a food name.</p>';
+                resultsDisplay.innerHTML = '<p class="text-red-500 font-medium">请输入食物名称。</p>'; // Changed error message to Chinese
                 return;
             }
 
@@ -93,11 +77,11 @@
 
             try {
                 // Construct the prompt for the LLM
-                const prompt = `Provide short and precise information about the ingredients, if it is good for people with high blood pressure or diabetes or high cholesterol or heart disease or kidney disease, and key nutritional facts (calories, protein, carbs, fat, vitamins, minerals) for "${foodName}". Please format the output clearly with headings for "Ingredients" and "Nutritional Facts".`;
+                // Changed prompt to request Chinese output
+                const prompt = `提供关于 "${foodName}" 的简短和精确信息，包括其成分、对高血压、糖尿病、高胆固醇、心脏病或肾脏病患者是否适宜，以及关键营养事实（卡路里、蛋白质、碳水化合物、脂肪、维生素、矿物质）。请使用清晰的标题，例如“成分”和“营养事实”。`;
 
                 // OpenRouter API configuration
-                
-                const encodedkey = "c2stb3ItdjEtYWU2ZmYwMzIxZDkyYWI0NjU4ZjdjNDI5MTJmMmI0ZTRmZjNkMTc0NzBiY2JjMGI5M2I5MzQ5MGIwZWNiM2ZiZg=="; //
+                const encodedkey = "c2stb3ItdjEtYWU2ZmYwMzIxZDkyYWI0NjU4ZjdjNDI5MTJmMmI0ZTRmZjNkMTc0NzBiY2JjMGI5M2I5MzQ5MGIwZWNiM2ZiZg==";
                 const apiKey = atob(encodedkey);
                 const apiUrl = `https://openrouter.ai/api/v1/chat/completions`; // OpenRouter endpoint
                 const model = "google/gemma-3-27b-it:free"; // You can choose other models available on OpenRouter
@@ -113,7 +97,7 @@
                 const response = await fetch(apiUrl, {
                     method: 'POST',
                     headers: {
-                        'Authorization': `Bearer ${apiKey}`, // OpenRouter uses Bearer token in Authorization header
+                        'Authorization': `Bearer ${apiKey}`,
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify(payload)
@@ -131,12 +115,12 @@
                     const generatedText = result.choices[0].message.content;
                     resultsDisplay.innerText = generatedText; // Display the generated text
                 } else {
-                    resultsDisplay.innerHTML = '<p class="text-red-500 font-medium">No information found or unexpected response format from OpenRouter. Please try again.</p>';
+                    resultsDisplay.innerHTML = '<p class="text-red-500 font-medium">未能找到信息或OpenRouter返回格式异常。请重试。</p>'; // Changed error message to Chinese
                 }
 
             } catch (error) {
                 console.error("Error fetching food information from OpenRouter:", error);
-                resultsDisplay.innerHTML = `<p class="text-red-500 font-medium">An error occurred: ${error.message}. Please check your API key or try again.</p>`;
+                resultsDisplay.innerHTML = `<p class="text-red-500 font-medium">发生错误：${error.message}。请检查您的API密钥或重试。</p>`; // Changed error message to Chinese
             } finally {
                 // Hide loading indicator and re-enable button
                 loadingIndicator.classList.add('hidden');
