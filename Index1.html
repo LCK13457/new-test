@@ -28,20 +28,24 @@
         }
     </style>
 </head>
-<body class="flex items-center justify-center min-h-screen p-4 text-lg"> <div class="bg-white p-8 rounded-lg shadow-xl w-full max-w-md border border-gray-200">
+<body class="flex items-center justify-center min-h-screen p-4 text-lg">
+    <div class="bg-white p-8 rounded-lg shadow-xl w-full max-w-md border border-gray-200">
         <h1 class="text-3xl font-bold text-center text-gray-800 mb-6">Food Information App</h1>
 
         <div class="mb-6">
-            <label for="foodNameInput" class="block text-gray-700 text-lg font-semibold mb-2">Enter Food Name:</label> <input
+            <label for="foodNameInput" class="block text-gray-700 text-lg font-semibold mb-2">Enter Food Name:</label>
+            <input
                 type="text"
                 id="foodNameInput"
-                placeholder="e.g., Apple, Chicken Breast, Oatmeal"
-                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 text-lg" >
+                placeholder="e.g., Apple, Chicken Breast, Oatmeal, 蘋果, 雞胸肉"
+                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 text-lg"
+            >
         </div>
 
         <button
             id="searchButton"
-            class="w-full bg-blue-600 text-white py-3 rounded-md font-semibold hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-200 ease-in-out shadow-md hover:shadow-lg text-lg" >
+            class="w-full bg-blue-600 text-white py-3 rounded-md font-semibold hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-200 ease-in-out shadow-md hover:shadow-lg text-lg"
+        >
             Get Info
         </button>
 
@@ -55,7 +59,8 @@
             </div>
         </div>
 
-        <div id="resultsDisplay" class="mt-6 p-4 bg-gray-50 border border-gray-200 rounded-md shadow-inner min-h-[150px] max-h-[400px] overflow-y-auto scrollable-content text-gray-800 text-xl leading-relaxed whitespace-pre-wrap"> <p class="text-gray-500 italic">Enter a food name above and click "Get Info" to see details.</p>
+        <div id="resultsDisplay" class="mt-6 p-4 bg-gray-50 border border-gray-200 rounded-md shadow-inner min-h-[150px] max-h-[400px] overflow-y-auto scrollable-content text-gray-800 text-xl leading-relaxed whitespace-pre-wrap">
+            <p class="text-gray-500 italic">Enter a food name above and click "Get Info" to see details.</p>
         </div>
     </div>
 
@@ -82,11 +87,19 @@
 
             try {
                 // Construct the prompt for the LLM
-                const prompt = `Provide short and precise information about the ingredients, if it is good for people with high blood pressure or diabetes or high cholesterol or heart disease or kidney disease, and key nutritional facts (calories, protein, carbs, fat, vitamins, minerals) for "${foodName}". Please format the output clearly with headings for "Ingredients" and "Nutritional Facts".`;
+                // Instruct the LLM to respond in the same language as the input and
+                // to explicitly address the health questions in that language.
+                const prompt = `Provide short and precise information about the following for "${foodName}":
+                1. Food Name (in the same language as the input food name)
+                2. Ingredients (short, comma-separated, in the same language)
+                3. Key Nutritional Facts (short, comma-separated, e.g., calories, protein, carbs, fat, vitamins, minerals, in the same language)
+                4. Is this food healthy for elderly people? (Respond "Yes" or "No" with a very brief reason, in the same language)
+                5. Is this food healthy for elderly people with high blood pressure, diabetes, high cholesterol, heart disease, or kidney disease? (Respond "Yes" or "No" with a very brief reason, in the same language)
+
+                Please format the output clearly, directly starting each piece of information with the number and question (e.g., "1. Food Name:...", "4. Is this food healthy for elderly people?:..."). Ensure all responses are strictly in the language of the input food name.`;
 
                 // OpenRouter API configuration
-                
-                const encodedkey = "c2stb3ItdjEtYWU2ZmYwMzIxZDkyYWI0NjU4ZjdjNDI5MTJmMmI0ZTRmZjNkMTc0NzBiY2JjMGI5M2I5MzQ5MGIwZWNiM2ZiZg=="; //
+                const encodedkey = "c2stb3ItdjEtYWU2ZmYwMzIxZDkyYWI0NjU4ZjdjNDI5MTJmMmJmZjNkMTc0NzBiY2JjMGI5M2I5MzQ5MGIwZWNiM2ZiZg=="; // Placeholder for your actual key
                 const apiKey = atob(encodedkey);
                 const apiUrl = `https://openrouter.ai/api/v1/chat/completions`; // OpenRouter endpoint
                 const model = "google/gemma-3-27b-it:free"; // You can choose other models available on OpenRouter
@@ -118,7 +131,26 @@
                 // Check if the response has content from OpenRouter
                 if (result.choices && result.choices.length > 0 && result.choices[0].message && result.choices[0].message.content) {
                     const generatedText = result.choices[0].message.content;
-                    resultsDisplay.innerText = generatedText; // Display the generated text
+
+                    // Split the generated text into lines
+                    const lines = generatedText.split('\n').filter(line => line.trim() !== '');
+                    let formattedOutput = '';
+
+                    // Manually parse and format each line to ensure the question and answer are clearly presented
+                    lines.forEach(line => {
+                        if (line.startsWith('1. ')) {
+                            formattedOutput += `<p class="font-bold">${line}</p>`;
+                        } else if (line.startsWith('2. ') || line.startsWith('3. ')) {
+                            formattedOutput += `<p>${line}</p>`;
+                        } else if (line.startsWith('4. ')) {
+                            formattedOutput += `<p>${line}</p>`;
+                        } else if (line.startsWith('5. ')) {
+                            formattedOutput += `<p>${line}</p>`;
+                        } else {
+                            formattedOutput += `<p>${line}</p>`; // Fallback for any unparsed lines
+                        }
+                    });
+                    resultsDisplay.innerHTML = formattedOutput;
                 } else {
                     resultsDisplay.innerHTML = '<p class="text-red-500 font-medium">No information found or unexpected response format from OpenRouter. Please try again.</p>';
                 }
